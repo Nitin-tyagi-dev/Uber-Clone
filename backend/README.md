@@ -1,14 +1,10 @@
-# User Registration Endpoint Documentation
+# User Endpoints Documentation
 
 ## POST `/user/register`
 
-Registers a new user in the system.
-
----
+Registers a new user.
 
 ### Request Body
-
-Send a JSON object with the following structure:
 
 ```json
 {
@@ -21,21 +17,38 @@ Send a JSON object with the following structure:
 }
 ```
 
-#### Field Requirements
-
 - `fullname.firstname` (string, required): Minimum 3 characters.
 - `fullname.lastname` (string, optional): Minimum 3 characters if provided.
-- `email` (string, required): Must be a valid email address.
+- `email` (string, required): Must be a valid email.
 - `password` (string, required): Minimum 6 characters.
-
----
 
 ### Responses
 
-#### Success
+- **201 Created**: `{ "token": "<jwt_token>", "user": { ... } }`
+- **400 Bad Request**: `{ "error": [ ...validation errors... ] }`
+- **500 Internal Server Error**: Standard error response.
 
-- **Status:** `201 Created`
-- **Body:**
+---
+
+## POST `/user/login`
+
+Authenticates a user and returns a JWT token.
+
+### Request Body
+
+```json
+{
+  "email": "johndoe@example.com",
+  "password": "yourpassword"
+}
+```
+
+- `email` (string, required): Must be a valid email.
+- `password` (string, required): Minimum 6 characters.
+
+### Responses
+
+- **200 OK**:  
   ```json
   {
     "token": "<jwt_token>",
@@ -50,38 +63,28 @@ Send a JSON object with the following structure:
     }
   }
   ```
-
-#### Validation Error
-
-- **Status:** `400 Bad Request`
-- **Body:**
+- **400 Bad Request**:  
   ```json
   {
-    "error": [
-      {
-        "msg": "First name should be 3 character long",
-        "param": "fullname.firstname",
-        "location": "body"
-      }
-      // ...other errors
-    ]
+    "error": [ ...validation errors... ]
   }
   ```
-
-#### Internal Server Error
-
-- **Status:** `500 Internal Server Error`
-- **Body:** Standard Express error response.
+- **401 Unauthorized**:  
+  ```json
+  {
+    "error": "invalid email or password"
+  }
+  ```
+- **500 Internal Server Error**: Standard error response.
 
 ---
 
-### Example Request
+### Example Login Request
 
 ```bash
-curl -X POST http://localhost:3000/user/register \
+curl -X POST http://localhost:3000/user/login \
   -H "Content-Type: application/json" \
   -d '{
-    "fullname": { "firstname": "Alice", "lastname": "Smith" },
     "email": "alice@example.com",
     "password": "securepass"
   }'
@@ -91,6 +94,6 @@ curl -X POST http://localhost:3000/user/register \
 
 ### Notes
 
-- Passwords are securely hashed before storage.
-- The returned JWT token can be used for authenticated requests.
-- The `password` field is never returned in API responses.
+- The login endpoint expects a POST request, not GET.
+- Passwords are securely hashed and never returned in responses.
+- The returned JWT token should be used for authenticated requests.
