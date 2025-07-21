@@ -92,6 +92,67 @@ curl -X POST http://localhost:3000/user/login \
 
 ---
 
+## User Routes
+
+### GET `/user/profile`
+
+**Description:**  
+Returns the authenticated user's profile information.
+
+**Authentication:**  
+Requires a valid JWT token (sent via cookie or `Authorization` header).
+
+**Response:**
+- `200 OK`: Returns user profile data.
+- `401 Unauthorized`: If token is missing or invalid.
+
+**Example Request:**
+```http
+GET /user/profile
+Authorization: Bearer <token>
+```
+
+**Example Response:**
+```json
+{
+  "_id": "user_id",
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john@example.com"
+}
+```
+
+---
+
+### GET `/user/logout`
+
+**Description:**  
+Logs out the authenticated user by blacklisting their token and clearing the authentication cookie.
+
+**Authentication:**  
+Requires a valid JWT token (sent via cookie or `Authorization` header).
+
+**Response:**
+- `200 OK`: Returns a success message.
+- `401 Unauthorized`: If token is missing or invalid.
+
+**Example Request:**
+```http
+GET /user/logout
+Authorization: Bearer <token>
+```
+
+**Example Response:**
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+---
+
 ### Notes
 
 - The login endpoint expects a POST request, not GET.

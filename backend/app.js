@@ -9,11 +9,14 @@ import cors from 'cors';
 import connectToDb from './db/db.js';
 import userRoutes from './routes/user.routes.js';
 
+import cookieParser from 'cookie-parser';
+
 connectToDb(); 
 
 app.use(cors());
 app.use(json());
 app.use(urlencoded({extended: true}));
+app.use(cookieParser());
 
 app.get("/" , (req , res) => {
     res.send("hello world");
