@@ -153,8 +153,100 @@ Authorization: Bearer <token>
 
 ---
 
+## Captain Routes
+
+### POST `/captains/register`
+
+**Description:**  
+Registers a new captain.
+
+**Authentication:**  
+No authentication required.
+
+**Request Body:**
+```json
+{
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john.doe@example.com",
+  "password": "securePassword123",
+  "vehicle": {
+    "color": "Red",
+    "plate": "XYZ123",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}
+```
+- `fullname.firstname` (string, required): Minimum 3 characters.
+- `fullname.lastname` (string, optional): Minimum 3 characters if provided.
+- `email` (string, required): Must be a valid email.
+- `password` (string, required): Minimum 6 characters.
+- `vehicle.color` (string, required): Minimum 3 characters.
+- `vehicle.plate` (string, required): Minimum 3 characters.
+- `vehicle.capacity` (integer, required): Minimum value 1.
+- `vehicle.vehicleType` (string, required): Must be one of `"car"`, `"motorcycle"`, `"auto"`.
+
+**Responses:**
+- **201 Created**:  
+  ```json
+  {
+    "token": "<jwt_token>",
+    "captain": {
+      "_id": "<captain_id>",
+      "fullname": {
+        "firstname": "John",
+        "lastname": "Doe"
+      },
+      "email": "john.doe@example.com",
+      "vehicle": {
+        "color": "Red",
+        "plate": "XYZ123",
+        "capacity": 4,
+        "vehicleType": "car"
+      },
+      "status": "inactive",
+      "location": {
+        "lat": null,
+        "lng": null
+      }
+    }
+  }
+  ```
+- **400 Bad Request**:  
+  ```json
+  {
+    "error": [ ...validation errors... ]
+  }
+  ```
+- **500 Internal Server Error**: Standard error response.
+
+**Example Request:**
+```bash
+curl -X POST http://localhost:3000/captains/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "password": "securePassword123",
+    "vehicle": {
+      "color": "Red",
+      "plate": "XYZ123",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+  }'
+```
+
+---
+
 ### Notes
 
-- The login endpoint expects a POST request, not GET.
+- All fields are required except `fullname.lastname`.
 - Passwords are securely hashed and never returned in responses.
-- The returned JWT token should be used for authenticated requests.
+- The returned JWT token should be used for authenticated requests (if implemented).

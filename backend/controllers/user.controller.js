@@ -1,4 +1,3 @@
-import e from 'express';
 import userModel from '../models/user.models.js'; 
 import { validationResult } from 'express-validator';
 import blacklistTokenModel from '../models/blacklistToken.model.js';
@@ -13,6 +12,11 @@ export async function registerUser(req, res, next) {
 
     const { fullname, email, password } = req.body;
 
+    const isUserExists = await captainModel.findOne({ email });
+      if (isUserExists) {
+        return res.status(400).json({ error: 'Email already exists' });
+      }  
+
     const hashedPassword = await userModel.hashPassword(password);
 
     const user = await userModel.create({
@@ -22,7 +26,7 @@ export async function registerUser(req, res, next) {
       },
       email,
       password: hashedPassword,
-    });
+    }); 
 
     const token = user.generateAuthToken();
 
@@ -64,12 +68,12 @@ export async function getUserProfile(req, res, next) {
 }
 
 export async function logoutUser(req, res, next) {
-    res.clearCookie('token');
+  res.clearCookie('token');
 
-    const token = req.cookies.token || req.headers.authorization.split(' ')[1];
+  const token = req.cookies.token || req.headers.authorization.split(' ')[1];
 
-    await blacklistTokenModel.create({ token });
-    res.status(200).json({ message: 'Logged out successfully' });
+  await blacklistTokenModel.create({ token });
+  res.status(200).json({ message: 'Logged out successfully' });
 }
 
 
